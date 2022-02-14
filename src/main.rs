@@ -9,7 +9,8 @@ use mini_redis::{Connection, Frame};
 async fn main() {
     let lock = Arc::new(Mutex::new(5));
     let lock2 = Arc::clone(&lock);
-
+    let h3_lock = Arc::clone(&lock);
+    
     let lock3 = Arc::new(Mutex::new(5));
     let lock4 = Arc::clone(&lock3);
 
@@ -32,8 +33,12 @@ async fn main() {
         println!("h2 isetne {:?}", thread::current().id());
         let b = lock2.lock().await;
         println!("h2 get second lock {:?}", thread::current().id());
+    });
+    let h3 = tokio::spawn(async move{
+        thread::sleep(Duration::from_millis(1000));
+        let a = h3_lock.lock().await;
 
-
+        
     });
 	h1.await;
 	h2.await;
